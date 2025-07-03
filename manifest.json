@@ -7,13 +7,19 @@
         "default_icon": "icons/favicon-32x32.png"
     },
 
+    "background": {
+        "scripts": ["src/background.js"],
+        "service_worker": "src/background.js"
+    },
+
     "content_scripts": [
         {
-            "matches": ["*://deepco.app/dig"],
+            "run_at": "document_end",
+            "matches": ["*://deepco.app/*"],
             "js": ["src/blockCounter.js"]
         }
     ],
 
-    "permissions": ["storage", "scripting"],
+    "permissions": ["storage", "scripting", "tabs"],
     "host_permissions": ["*://deepco.app/*"]
 }

@@ -1,58 +1,79 @@
-// Global Variables
-var SectorCounter;
-// Regular, Corrupt, Valuable
-var count = [0, 0, 0];
+(() => {
+    // Regular, Corrupt, Valuable
+    var count = [0, 0, 0];
+    var sectorCounter;
+    var bonusPanel;
+    var tiles;
+    var main;
 
-setTimeout(() => {
     console.log("starting");
-    let bonusPanel = document.querySelectorAll('[id^="bonus-panel"]')[0];
-    bonusPanel.innerHTML =
-        '<div id="sector_counter"></div>' + bonusPanel.innerHTML;
+    main = document.querySelector('[id^="grid-panel"]');
 
-    let tiles = document.querySelectorAll('[id^="tile_wrapper"]');
-    SectorCounter = document.querySelectorAll('[id^="sector_counter"]')[0];
+    new MutationObserver((mutation, observer) => {
+        console.log(mutation);
+        if (mutation[0].attributeName == "complete") {
+            bonusPanel = document.querySelector('[id^="bonus-panel"]');
+            tiles = document.querySelectorAll('[id^="tile_wrapper"]');
 
-    if (tiles) {
-        // Count current blocks
-        tiles.forEach((tile) => {
-            let tileType = tile.innerText.replace(/[^⚙︎^$︎^▓︎]/g, "");
-            countBlocks(tileType);
+            if (tiles) {
+                // Count current blocks
+                count = [0, 0, 0];
+                tiles.forEach((tile) => {
+                    let tileType = tile.innerText.replace(/[^⚙︎^$︎^▓︎]/g, "");
+                    countBlocks(tileType);
 
-            // Blocks add themselves to the count when mined
-            new MutationObserver((mutation, observer) => {
-                let tileType = tile.innerText.replace(/[^⚙︎^$︎^▓︎]/g, "");
-                countBlocks(tileType);
+                    // Blocks add themselves to the count when mined
+                    new MutationObserver((mutation, observer) => {
+                        let tileType = tile.innerText.replace(
+                            /[^⚙︎^$︎^▓︎]/g,
+                            ""
+                        );
+                        countBlocks(tileType);
+                        updateCountHTML();
+                        observer.disconnect();
+                    }).observe(tile, { childList: true });
+                });
                 updateCountHTML();
-                observer.disconnect();
-            }).observe(tile, { childList: true });
-        });
-    }
-    updateCountHTML();
-}, 3000);
+            }
+        }
+    }).observe(main, { attributes: true });
 
-function updateCountHTML() {
-    SectorCounter.innerHTML =
-        "<span class='dirt'>▓︎:" +
-        count[0] +
-        "</span><span class='junk'>\n⚙︎:" +
-        count[1] +
-        "</span><span class='valuable'>\n$︎:" +
-        count[2] +
-        "</span>";
-    console.log(count);
-}
+    const updateCountHTML = () => {
+        sectorCounter = document.querySelector('[id^="sector_counter"]');
+        if (!sectorCounter) {
+            sectorCounter = document.createElement("div");
+            sectorCounter.id = "sector_counter";
+            let counterDirt = document.createElement("span");
+            counterDirt.className = "dirt";
+            let counterJunk = document.createElement("span");
+            counterJunk.className = "junk";
+            let counterValuable = document.createElement("span");
+            counterValuable.className = "valuable";
+            sectorCounter.appendChild(counterDirt);
+            sectorCounter.appendChild(counterJunk);
+            sectorCounter.appendChild(counterValuable);
 
-function countBlocks(tileType) {
-    switch (tileType) {
-        case "▓︎":
-            break;
-        case "⚙︎":
-            count[1] += 1;
-            break;
-        case "$︎":
-            count[2] += 1;
-            break;
-        default:
-            count[0] += 1;
-    }
-}
+            bonusPanel.prepend(sectorCounter);
+        }
+
+        sectorCounter.children[0].innerText = "▓︎:" + count[0];
+        sectorCounter.children[1].innerText = " ⚙︎:" + count[1];
+        sectorCounter.children[2].innerText = " $︎:" + count[2];
+        console.log(count);
+    };
+
+    const countBlocks = (tileType) => {
+        switch (tileType) {
+            case "▓︎":
+                break;
+            case "⚙︎":
+                count[1] += 1;
+                break;
+            case "$︎":
+                count[2] += 1;
+                break;
+            default:
+                count[0] += 1;
+        }
+    };
+})();
