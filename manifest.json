@@ -1,0 +1,19 @@
+{
+    "name": "DeepCo Optimiser",
+    "description": "Base Level Extension",
+    "version": "1.0",
+    "manifest_version": 3,
+    "action": {
+        "default_icon": "icons/favicon-32x32.png"
+    },
+
+    "content_scripts": [
+        {
+            "matches": ["*://deepco.app/*"],
+            "js": ["src/blockCounter.js"]
+        }
+    ],
+
+    "permissions": ["storage", "scripting"],
+    "host_permissions": ["*://deepco.app/*"]
+}
