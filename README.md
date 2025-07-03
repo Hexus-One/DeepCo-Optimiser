@@ -1,5 +1,5 @@
 # Compiled tools for DeepCo
-For optimal and efficient gameplay
+For optimal and efficient gameplay\
 Compilation of all the hard work put into the spreadsheets made accessible in game
 for maximum efficiency
 
